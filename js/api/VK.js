@@ -12,7 +12,7 @@
  * */
 class VK {
   // static ACCESS_TOKEN = '958eb5d439726565e9333aa30e50e0f937ee432e927f0dbd541c541887d919a7c56f95c04217915c32008';
-  static ACCESS_TOKEN = "a2d8951fa2d8951fa2d8951fb5a1cd61e5aa2d8a2d8951fc7f2f5d100529d9273d07859";
+  static ACCESS_TOKEN = "token";
   static lastCallback;
 
   static get(id = '', callback){
