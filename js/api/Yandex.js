@@ -1,7 +1,5 @@
 /**
  * Класс Yandex
- * Используется для управления облаком.
- * Имеет свойство HOST
  * */
 class Yandex {
   static HOST = 'https://cloud-api.yandex.net/v1/disk';
@@ -24,7 +22,6 @@ class Yandex {
         return null;   // Возвращаеи null
       }
     }
-
     return token;      // Возвращаем токен для дальнейшего использования.
   }
 
@@ -32,19 +29,16 @@ class Yandex {
    * Метод загрузки файла в облако: загрузка файла на Яндекс.Диск.
    */
   static uploadFile(path, url, callback) {
+
     const token = Yandex.getToken();
     if (!token) return;
 
     createRequest({
       method: 'POST',
-      url: `${Yandex.HOST}/resources/upload`,
+      url: `${Yandex.HOST}/resources/upload?path=${path}&url=${encodeURIComponent(url)}`,
       headers: {
         'Authorization': `OAuth ${token}`,
         'Content-Type': 'application/json',
-      },
-      data: {
-        path: path,       //  `path` (куда загружать)
-        url: url         //  `url` (откуда загружать)
       },
       callback: callback
     });
@@ -54,6 +48,7 @@ class Yandex {
    * Удаление файла с Яндекс.Диска.
    */
   static removeFile(path, callback) {
+
     const token = Yandex.getToken();
     if (!token) return;
 
@@ -71,6 +66,7 @@ class Yandex {
    * Получение всех загруженных файлов с Яндекс.Диска.
    */
   static getUploadedFiles(callback) {
+
     const token = Yandex.getToken();
     if (!token) return;
 
@@ -92,5 +88,6 @@ class Yandex {
     link.href = fileUrl;
     link.download = '';
     link.click();
+    link.remove();
   }
 }

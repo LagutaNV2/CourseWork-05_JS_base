@@ -1,6 +1,6 @@
 class ImageViewer {
   constructor(element) {
-    this.picList = $(element).find('.row').first();
+    this.imagesList = $(element).find('.row').first();
     this.selectAllButton = $(element).find('.select-all');
     this.sendButton = $(element).find('.send');
     this.imagePreview = $(element).find('.ui.fluid.image');
@@ -12,44 +12,70 @@ class ImageViewer {
    * Добавляет следующие обработчики событий:
    * 1. Клик по изображению меняет класс активности у изображения
    * 2. Двойной клик по изображению отображает изображение в блоке предпросмотра
-   * 3. Клик по кнопке выделения всех изображений проверяет, у всех ли изображений есть класс активности?
-   * Добавляет или удаляет класс активности у всех изображений
+   * 3. Клик по кнопке выделения всех изображений проверяет и добавляет/удаляет класс активности у всех изображений
    * 4. Клик по кнопке "Посмотреть загруженные файлы" открывает всплывающее окно просмотра загруженных файлов
    * 5. Клик по кнопке "Отправить на диск" открывает всплывающее окно для загрузки файлов
    */
   registerEvents() {
-    this.picList.on('dblclick', 'img', (ev) => {
-      this.imagePreview.attr('src', ev.target.src); // Используем jQuery для изменения src
-    });
-
-    this.picList.on('click', 'img', (ev) => {
+    // 1. меняем класс активности у изображения
+    this.imagesList.on('click', 'img', (ev) => {
       $(ev.target).toggleClass('selected');
       this.checkButtonText();
     });
 
+    // 2. отображаем изображение в блоке предпросмотра
+    this.imagesList.on('dblclick', 'img', (ev) => {
+      console.log('изменение src ui.fluid.image на ', ev.target.src)
+      this.imagePreview.attr('src', ev.target.src);
+    });
+
+    // 3. добавляем/удаляем класс активности
     this.selectAllButton.on('click', () => {
-      let selectedPic = this.picList.find('img');
-      if (!this.picList.find('.selected').length) {
-        selectedPic.addClass('selected');
+      let selectedImg = this.imagesList.find('img');
+      if (!this.imagesList.find('.selected').length) {
+        selectedImg.addClass('selected');
       } else {
-        this.picList.find('.selected').removeClass('selected');
+        this.imagesList.find('.selected').removeClass('selected');
       }
+
       this.checkButtonText();
     });
 
+    // 4. открываем всплывающее окно просмотра загруженных файлов
     this.showLoadButton.on('click', () => {
+      console.log('вызываем загрузчик фото из ЯД и App.modals.filePreviewer.open()');
       App.modals.filePreviewer.open();
-      Yandex.getUploadedFiles(function (resp) {
-        App.modals.filePreviewer.showImages(resp);
+      Yandex.getUploadedFiles(function(err, response) {
+        if (err) {
+          console.error('Ошибка при получении загруженных файлов:', err);
+          return;
+        }
+
+        // Проверяем наличие изображений
+        const images = response.items;
+        if (images && images.length > 0) {
+          App.modals.filePreviewer.showImages(images);
+        } else {
+          console.log('Нет изображений для отображения.');
+          const modalContent = App.modals.filePreviewer.element.find('.content');
+          modalContent.html('<p>На Yandex Disk нет изображений для отображения.</p>');
+
+          // Закрываем окно с задежкой 5 сек.
+          setTimeout(() => {
+            App.modals.filePreviewer.close();
+          }, 5000);
+        }
       });
     });
 
+    // 5. открываем всплывающее окно для загрузки файлов
     this.sendButton.on('click', () => {
       App.modals.fileUploader.open();
       let images = [];
-      this.picList.find('.selected').each((_, el) => {
+      this.imagesList.find('.selected').each((_, el) => {
         images.push($(el).attr('src'));
       });
+      console.log('images for send: ', images);
       App.modals.fileUploader.showImages(images);
     });
   }
@@ -58,14 +84,14 @@ class ImageViewer {
    * Очищает отрисованные изображения
    */
   clear() {
-    this.picList.find('.four.wide.column.ui.medium.image-wrapper').remove(); // Используем jQuery для удаления элементов
+    this.imagesList.find('.four.wide.column.ui.medium.image-wrapper').remove();
   }
 
   /**
    * Отрисовывает изображения.
    */
   drawImages(images) {
-    this.clear(); // Очищаем блок перед добавлением новых изображений
+    this.clear();
 
     if (images.length > 0) {
       this.selectAllButton.removeClass('disabled');
@@ -75,11 +101,12 @@ class ImageViewer {
             <img src="${el}" class="ui fluid image">
           </div>
         `);
-        this.picList.append(imgWrapper); // Используем jQuery для добавления элементов
+        this.imagesList.append(imgWrapper);
       });
     } else {
       if (!this.selectAllButton.hasClass('disabled')) {
-        this.selectAllButton.addClass('disabled');
+        // this.selectAllButton.addClass('disabled'); устаревший метод вставки!
+        this.imagesList[0].insertAdjacentHTML('beforeend', imgWrapper);
       }
     }
   }
@@ -88,7 +115,7 @@ class ImageViewer {
    * Контроллирует кнопки выделения всех изображений и отправки изображений на диск
    */
   checkButtonText() {
-    if (this.picList.find('.selected').length > 0) {
+    if (this.imagesList.find('.selected').length > 0) {
       this.selectAllButton.text("Снять выделение");
       this.sendButton.removeClass('disabled');
     } else {

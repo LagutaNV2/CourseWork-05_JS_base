@@ -11,8 +11,8 @@
  * а не его экземплярам.
  * */
 class VK {
-  // static ACCESS_TOKEN = '958eb5d439726565e9333aa30e50e0f937ee432e927f0dbd541c541887d919a7c56f95c04217915c32008';
-  static ACCESS_TOKEN = "a2d8951fa2d8951fa2d8951fb5a1cd61e5aa2d8a2d8951fc7f2f5d100529d9273d07859";
+
+  static ACCESS_TOKEN = 'f0471e55f0471e55f0471e554cf35184e5ff047f0471e55953079f20569d57afdeea69e';
   static lastCallback;
 
   static get(id = '', callback){
@@ -29,7 +29,9 @@ class VK {
     script.src = `https://api.vk.com/method/photos.get?owner_id=${id}&album_id=profile&access_token=${VK.ACCESS_TOKEN}&v=5.199&callback=VK.processData`;
 
     // 4. Добавляем созданный элемент <script> в тело документа, что инициирует запрос.
-    document.body.appendChild(script);
+
+    // document.body.appendChild(script); - устаревший метод. Избегать!
+    document.body.insertAdjacentElement('beforeend', script);
     console.log('отправляем запрос на vk ', script.src)
 
   }
@@ -70,7 +72,7 @@ class VK {
 
     // - метод .map() проходит по каждому элементу массива photos и
     //            создает новый массив, применяя callback;
-    // - photos — это массив объектов - фотографий, и у каждой фотографии
+    // - photos — это массив объектов - фотографий, где у каждой фотографии
     //            есть массив с различными размерами (photo.sizes);
     // - Каждый объект в массиве sizes содержит информацию о картинке:
     //            width, height, url;
@@ -94,13 +96,11 @@ class VK {
       return largest.url; // Возвращаем URL самого крупного изображения.
     });
 
-    // 4. Передаем массив larg foto (url) в callback, который был передан в метод get, для выполнения
-    // например, выполнения функции вывода этих фото на страницу
+    // 4. Передаем массив larg foto (url) в callback, который был передан в метод get, для выполнения,
+    // например, функции вывода этих фото на страницу
     VK.lastCallback(largestPhotos);
 
     // 5. После выполнения callback сбрасываем его значение на пустую функцию.
     VK.lastCallback = () => {};
   }
-
-
 }

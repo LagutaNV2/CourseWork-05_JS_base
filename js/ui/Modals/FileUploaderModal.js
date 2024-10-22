@@ -21,24 +21,24 @@ class FileUploaderModal extends BaseModal {
    * отправляет одно изображение, если клик был по кнопке отправки
    */
   registerEvents() {
-    // Клик по крестику для закрытия окна
+    // 1.Клик по крестику для закрытия окна
     this.xIcon.on('click', () => {
       App.modals.fileUploader.close();
     });
 
-    // Клик по кнопке "Закрыть" для закрытия окна
+    // 2.Клик по кнопке "Закрыть" для закрытия окна
     this.closeButton.on('click', () => {
       App.modals.fileUploader.close();
+    });
+
+    // 3.Клик по кнопке "Отправить все файлы"
+    this.sendButton.on('click', () => {
+      this.sendAllImages();
     });
 
     // Обработчик клика по кнопке отправки изображения
     this.scrollContent.on('click', '.ui.button', (ev) => {
       this.sendImage($(ev.target).closest('.image-preview-container'));
-    });
-
-    // Клик по кнопке "Отправить все файлы"
-    this.sendButton.on('click', () => {
-      this.sendAllImages();
     });
   }
 
@@ -70,7 +70,7 @@ class FileUploaderModal extends BaseModal {
    */
   sendAllImages() {
     this.scrollContent.find('.image-preview-container').each((_, el) => {
-      this.sendImage($(el)); // Используем jQuery для обработки каждого изображения
+      this.sendImage($(el)); // отправка изображения по 1 шт.
     });
   }
 
@@ -83,7 +83,9 @@ class FileUploaderModal extends BaseModal {
 
     if (filePath) {
       imageContainer.find('.action').addClass('disabled'); // Блокируем элемент во время отправки
-      let url = imageContainer.find('img').attr('src'); // Получаем URL изображения
+      let url = imageContainer.find('img').attr('src');
+      console.log('Отправка на ЯД. Получен filePath', filePath);
+      console.log('Получен URL изображения', url);
 
       Yandex.uploadFile(filePath, url, () => {
         imageContainer.remove(); // Удаляем элемент после успешной отправки
@@ -94,7 +96,8 @@ class FileUploaderModal extends BaseModal {
         }
       });
     } else {
-      imageContainer.find('.action').addClass('error'); // Добавляем класс ошибки, если путь пуст
+      alert('Путь к файлу должен быть указан!');
+      imageContainer.find('.action').addClass('error');
     }
   }
 }

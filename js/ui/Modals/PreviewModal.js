@@ -5,8 +5,8 @@
 class PreviewModal extends BaseModal {
   // 1. Конструктор
   constructor(element) {
-    super(element); // Вызов конструктора родителя (BaseModal)
-    this.registerEvents(); // Регистрация событий при инициализации
+    super(element);
+    this.registerEvents();
   }
 
   /**
@@ -74,6 +74,8 @@ class PreviewModal extends BaseModal {
    * 3. метод отображает переданные изображения в модальном окне.
    */
   showImages(images) {
+    console.log('showImages получил images ', images);
+
     const reversedImages = images.reverse();
 
     // Для каждого изображения создаём HTML-разметку:
@@ -102,28 +104,34 @@ class PreviewModal extends BaseModal {
    * 5. метод возвращает HTML-разметку для одного изображения с информацией о нём.
    */
   getImageInfo(image) {
-    const { fileName, created, size, filePath, fileUrl } = image; // Извлекаем данные из объекта изображения
-    const formattedDate = this.formatDate(created); // Форматируем дату создания
-    const sizeKB = (size / 1024).toFixed(2); // Преобразуем размер файла в КБ
 
-    // Формируем и возвращаем HTML-разметку для изображения и его информации
+    const { name, created, size, path, file } = image;
+
+    console.log('Извлекаем данные из объекта изображения', image);
+    console.log('name, created, size: ', name, created, size);
+    console.log('filePath: ', path);
+    console.log('fileUrl: ', file);
+
+    const formattedDate = this.formatDate(created);
+    const sizeKB = (size / 1024).toFixed(2);
+
     return `
       <div class="image-preview-container">
-        <img src='${fileUrl}' alt="${fileName}" />
+        <img src='${file}' alt="${name}" />
         <table class="ui celled table">
           <thead>
             <tr><th>Имя</th><th>Создано</th><th>Размер</th></tr>
           </thead>
           <tbody>
-            <tr><td>${fileName}</td><td>${formattedDate}</td><td>${sizeKB} КБ</td></tr>
+            <tr><td>${name}</td><td>${formattedDate}</td><td>${sizeKB} КБ</td></tr>
           </tbody>
         </table>
         <div class="buttons-wrapper">
-          <button class="ui labeled icon red basic button delete" data-path='${filePath}'>
+          <button class="ui labeled icon red basic button delete" data-path='${path}'>
             Удалить
             <i class="trash icon"></i>
           </button>
-          <button class="ui labeled icon violet basic button download" data-file='${fileUrl}'>
+          <button class="ui labeled icon violet basic button download" data-file='${file}'>
             Скачать
             <i class="download icon"></i>
           </button>

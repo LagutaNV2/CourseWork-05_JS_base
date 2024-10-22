@@ -20,10 +20,10 @@ class SearchBlock {
       const userId = this.element.find('input').val().trim(); // Получаем ID пользователя
       console.log('User ID: ', userId);
       if (userId) {
-        App.imageViewer.clear(); // Очищаем отрисованные изображения
-        this.loadImages(userId); // Загружаем изображения для нового пользователя
+        App.imageViewer.clear();
+        this.loadImages(userId);
       } else {
-        alert('Пожалуйста, введите ID пользователя.'); // Сообщение, если поле пустое
+        alert('Пожалуйста, введите ID пользователя.');
       }
     });
 
@@ -34,7 +34,7 @@ class SearchBlock {
       if (userId) {
         this.loadImages(userId); // Загружаем и добавляем изображения
       } else {
-        alert('Пожалуйста, введите ID пользователя.'); // Сообщение, если поле пустое
+        alert('Пожалуйста, введите ID пользователя.');
       }
     });
   }
@@ -43,16 +43,13 @@ class SearchBlock {
    * Загружает изображения для указанного пользователя
    */
   loadImages(userId) {
-    // Выполняем запрос на VK API с помощью метода VK.get
+    // запрос на VK API
     VK.get(userId, (images) => {
       if (images && images.length > 0) {
-        // Проверяем, что массив изображений не пустой
-        App.imageViewer.drawImages(images); // Отрисовываем изображения в блоке просмотра
+        App.imageViewer.drawImages(images);
       } else {
-        alert('Не удалось получить изображения. Убедитесь, что ID пользователя верен.'); // Сообщение, если изображения не получены
+        alert('Не удалось получить изображения. Убедитесь, что ID пользователя верен.');
       }
     });
-
   }
-
 }

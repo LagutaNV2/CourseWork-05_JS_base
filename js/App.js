@@ -30,6 +30,7 @@ class App {
    * App.getModal( 'login' ); // извелекает App.modals.login
    * */
   static getModal(name) {
+    console.log('App getModal name=', name);
     return this.modals[name];
   }
 }

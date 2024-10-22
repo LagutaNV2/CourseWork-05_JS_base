@@ -7,13 +7,10 @@ const createRequest = (options = {}) => {
   console.log('new cookie: ', document.cookie);
 
   const { method = 'GET', url, headers = {}, data = null, callback } = options;
-  console.log('New createRequests HEADERS: ', headers, 'from options.');
-
   const xhr = new XMLHttpRequest();
 
   // Конфигурируем запрос с указанным методом и URL
   let requestUrl = url;
-  console.log('Конфигурируем запрос с указанным методом: ', method, ' и requestUrl: ', requestUrl);
 
   // Если тек.метод = GET с неким набором data, добавляем их в строку запроса:
 
@@ -48,21 +45,18 @@ const createRequest = (options = {}) => {
   xhr.responseType = 'json';
 
   // 4. Устанавливаем заголовки запроса
-  // try {
-  //   for (const header in headers) {
-  //     if (headers.hasOwnProperty(header)) {
-  //       xhr.setRequestHeader(header, headers[header]);
-  //       console.log('Установлен заголовок:', header, 'значение:', headers[header]);
-  //     }
-  //   }
-  // } catch (err) {
-  //   console.log('Ошибка при установке заголовков:', err);
-  // }
+  try {
+    for (const header in headers) {
+      if (headers.hasOwnProperty(header)) {
+        xhr.setRequestHeader(header, headers[header]);
+        console.log('Установлен заголовок:', header, 'значение:', headers[header]);
+      }
+    }
+  } catch (err) {
+    console.log('Ошибка при установке заголовков:', err);
+  }
 
-  xhr.setRequestHeader('Accept', 'application/json');
-  xhr.setRequestHeader('Authorization', 'OAuth ' + Yandex.getToken());
-  console.log('4. Установленные заголовки:', headers);
-
+  console.log('запрос: ', xhr);
 
 
   // Обработка ответа от сервера
@@ -71,7 +65,7 @@ const createRequest = (options = {}) => {
   //    второй аргумент — результат.
   xhr.onload = function() {
     if (xhr.status >= 200 && xhr.status < 300) {
-      console.log('response = ', xhr.response);
+      console.log('xhr.response = ', xhr.response);
       callback(null, xhr.response);
     } else {
       console.log(' err = ', xhr.status);
